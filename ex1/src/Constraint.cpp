@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
 
   InstMapTy InstMap;
   unsigned int Counter = 0;
+  
+  // InstMap stores the id of each instruction
   for (auto &F : *Mod) {
     for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; I++) {
       InstMap[&*I] = Counter++;
@@ -44,7 +46,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (argc == 3 && !strcmp(argv[1], "-d"))
+  if (argc == 3 && !strcmp(argv[2], "-d"))
     Ext.print(InstMap);
 
   std::cout << "Potential divide-by-zero points:" << std::endl;

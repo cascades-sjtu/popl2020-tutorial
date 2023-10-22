@@ -62,6 +62,24 @@ public:
         }
       }
     }
+    std::cout << "=== In ===" << std::endl;
+    for (auto &V1 : InstMap) {
+      for (auto &V2 : InstMap) {
+        z3::expr Q = In(C.bv_val(V1.second, 32), C.bv_val(V2.second, 32));
+        if (Solver->query(Q) == z3::sat) {
+          printTuple("In", V1.first, V2.first);
+        }
+      }
+    }
+    std::cout << "=== Next ===" << std::endl;
+    for (auto &V1 : InstMap) {
+      for (auto &V2 : InstMap) {
+        z3::expr Q = Next(C.bv_val(V1.second, 32), C.bv_val(V2.second, 32));
+        if (Solver->query(Q) == z3::sat) {
+          printTuple("Next", V1.first, V2.first);
+        }
+      }
+    }
     std::cout << "=== Kill ===" << std::endl;
     for (auto &V1 : InstMap) {
       for (auto &V2 : InstMap) {
