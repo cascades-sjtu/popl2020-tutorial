@@ -125,8 +125,14 @@ bool Instrument::runOnFunction(Function &F) {
             M->getFunction(DSEBinOpFunctionName),
             {ConstantInt::get(Type::getInt32Ty(C), getRegisterID(BO)),
              ConstantInt::get(Type::getInt32Ty(C), BO->getOpcode())});
-
       } else if (ICmpInst *IC = dyn_cast<ICmpInst>(&I)) {
+        Builder.SetInsertPoint(IC->getNextNode());
+        push(IC->getOperand(0), M, C, Builder);
+        push(IC->getOperand(1), M, C, Builder);
+        Builder.CreateCall(
+            M->getFunction(DSEICmpFunctionName),
+            {ConstantInt::get(Type::getInt32Ty(C), getBranchID(IC)),
+             ConstantInt::get(Type::getInt32Ty(C), IC->getPredicate())});
       }
     }
   }

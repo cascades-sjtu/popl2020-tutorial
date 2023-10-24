@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
 
   int Iter = 0;
   while (Iter < MaxIter) {
+    std::cout << "Iter " << Iter << std::endl;
     int Ret = std::system(argv[1]);
     if (Ret) {
       std::cout << "Crashing input found (" << Iter << " iters)" << std::endl;

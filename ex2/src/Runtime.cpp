@@ -7,6 +7,17 @@
 
 extern SymbolicInterpreter SI;
 
+// helper function for the stack-based arithmetic
+z3::expr pop(MemoryTy &Mem) {
+  z3::expr SE = SI.getStack().top();
+  SI.getStack().pop();
+  if (SE.to_string().at(0) == 'R') {
+    int RID = std::stoi(SE.to_string().substr(1));
+    return Mem.at(Address(RID));
+  } else
+    return SE;
+}
+
 /*
  * Implement your transfer functions.
  */
@@ -22,14 +33,7 @@ extern "C" void __DSE_Store__(int R) {
   z3::expr Addr = Mem.at(Address(R)); // get value from symbolic register
   Address MAddr =
       Address((int *)std::stoll(Addr.to_string())); // create symbolic memory
-  z3::expr SE = SI.getStack().top();
-  SI.getStack().pop();
-  if (SE.to_string().at(0) == 'R') {
-    int RID = std::stoi(SE.to_string().substr(1));
-    z3::expr RSE = Mem.at(Address(RID));
-    Mem.insert(std::make_pair(MAddr, RSE));
-  } else
-    Mem.insert(std::make_pair(MAddr, SE));
+  Mem.insert(std::make_pair(MAddr, pop(Mem)));
 }
 
 extern "C" void __DSE_Load__(int Y, int *X) {
@@ -39,7 +43,18 @@ extern "C" void __DSE_Load__(int Y, int *X) {
   Mem.insert(std::make_pair(Addr, SE));
 }
 
-extern "C" void __DSE_ICmp__(int R, int Op) { /* Add your code here */
+extern "C" void __DSE_ICmp__(int R, int Op) {
+  MemoryTy &Mem = SI.getMemory();
+  z3::expr RHS = pop(Mem);
+  z3::expr LHS = pop(Mem);
+  switch (Op) {
+  case llvm::CmpInst::ICMP_EQ:
+    SI.getPathCondition().push_back(std::make_pair(R, LHS == RHS));
+    break;
+  case llvm::CmpInst::ICMP_SGT:
+    SI.getPathCondition().push_back(std::make_pair(R, LHS > RHS));
+    break;
+  }
 }
 
 extern "C" void __DSE_BinOp__(int R, int Op) {
