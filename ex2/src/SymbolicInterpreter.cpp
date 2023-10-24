@@ -17,7 +17,7 @@ int SymbolicInterpreter::NewInput(int *Ptr, int ID) {
   if (Inputs.find(ID) != Inputs.end()) {
     Ret = Inputs[ID];
   } else {
-    Ret = std::rand();
+    Ret = std::rand() % (1 << 16); // limit the test time of the infeasable
     Inputs[ID] = Ret;
   }
   Address X(Ptr);

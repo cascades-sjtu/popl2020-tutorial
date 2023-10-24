@@ -58,8 +58,19 @@ extern "C" void __DSE_ICmp__(int R, int Op) {
 }
 
 extern "C" void __DSE_BinOp__(int R, int Op) {
+  MemoryTy &Mem = SI.getMemory();
+  z3::expr RHS = pop(Mem);
+  z3::expr LHS = pop(Mem);
   switch (Op) {
   case llvm::Instruction::Add:
+    Mem.insert(std::make_pair(Address(R), LHS + RHS));
+    break;
+  case llvm::Instruction::Mul:
+    Mem.insert(std::make_pair(Address(R), LHS * RHS));
+    break;
+  case llvm::Instruction::SRem:
+    Mem.insert(std::make_pair(Address(R), z3::rem(LHS, RHS)));
+    break;
   default:
     return;
   }
