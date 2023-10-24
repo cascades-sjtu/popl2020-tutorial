@@ -19,7 +19,7 @@ public:
   Address(int *Ptr) : Type(Memory), Addr((uintptr_t)Ptr) {}
   Address(int ID) : Type(Register), Addr(ID) {}
   Address(z3::expr &R)
-      : Type(Register), Addr(std::stoi(R.to_string().substr(1))) {}
+      : Type(Register), Addr(std::stoll(R.to_string().substr(1))) {}
 
   bool operator<(const Address &RHS) const {
     return (Type < RHS.Type) || (Type == RHS.Type && Addr < RHS.Addr);
