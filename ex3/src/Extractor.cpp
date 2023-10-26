@@ -171,8 +171,12 @@ void Extractor::initialize(Function &F) {
   BasicBlock *Entry = &F.getEntryBlock();
   z3::func_decl Rel = BBRelations.at(Entry);
   z3::expr_vector Vec = FreeVariableVector.at(Entry);
-  z3::expr R0 = z3::forall(Vec, Rel(Vec));
-  Solver->add_rule(R0, C.str_symbol(""));
+  try {
+    z3::expr R0 = z3::forall(Vec, Rel(Vec));
+    Solver->add_rule(R0, C.str_symbol(""));
+  } catch (z3::exception e) {
+    std::cerr << "z3::exception: " << e.msg() << std::endl;
+  }
 }
 
 // get the free variable of Succ with the affect from BB

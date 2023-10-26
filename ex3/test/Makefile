@@ -1,6 +1,6 @@
 .PRECIOUS: %.ll %.opt.ll
 
-TARGETS=simple0 simple1 simple2
+TARGETS=baby simple0 simple1 simple2
 
 all: ${TARGETS}
 
